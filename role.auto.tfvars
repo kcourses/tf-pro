@@ -1,0 +1,1 @@
+iam_role_name = "s3_access_role"
