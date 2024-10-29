@@ -4,12 +4,27 @@ locals {
   policy_names = ["s3_read_access", "s3_list_access"]
 }
 
+resource "random_string" "random_account_id" {
+  length  = 12
+  special = false
+  lower   = false
+  upper   = false
+  numeric = true
+}
+
+output "random_string" {
+  value = random_string.random_account_id.result
+}
+
 resource "aws_iam_policy" "s3_policies" {
   for_each = { for name in local.policy_names : name => name }
 
-  name   = each.key
-  path   = "/"
-  policy = file("${path.module}/policies/${each.key}.json")
+  name = each.key
+  path = "/"
+  #   policy = file("${path.module}/policies/${each.key}.json")
+  policy = templatefile("${path.module}/policies/${each.key}.json", {
+    accountid = random_string.random_account_id.result
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "s3_policy_attachments" {

@@ -7,7 +7,7 @@
       "Resource": "arn:aws:s3:::tf-pro-cert-s9v7iba9fp/*",
       "Condition": {
         "StringEquals": {
-          "aws:sourceAccount": "123456789012"
+          "aws:sourceAccount": "${accountid}"
         }
       }
     }
