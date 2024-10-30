@@ -1,0 +1,16 @@
+{
+  "security_groups": [
+    {
+      "name": "app_sg",
+      "description": "Application security group"
+    },
+    {
+      "name": "db_sg",
+      "description": "Database security group"
+    },
+    {
+      "name": "cache_sg",
+      "description": "Cache security group"
+    }
+  ]
+}
