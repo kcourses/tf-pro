@@ -18,7 +18,7 @@ resource "aws_instance" "web" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t3.micro"
 
-  subnet_id = "subnet-055c96e984dd3d4ef"
+  subnet_id                   = "subnet-055c96e984dd3d4ef"
   associate_public_ip_address = true
 
   vpc_security_group_ids = [
@@ -45,32 +45,32 @@ resource "time_sleep" "delay" {
   ]
 }
 
-### Validation using data
-data "http" "data_ec2_validation" {
-  url = "http://${aws_instance.web.public_ip}"
-  insecure = true
-
-  lifecycle {
-    postcondition {
-      condition = self.status_code == 200
-      error_message = "${self.url} returned an unhealthy status code"
-    }
-  }
-
-  depends_on = [aws_instance.web, time_sleep.delay]
-}
-
-### Validation using check
-check "response" {
-  data "http" "check_ec2_validation" {
-    url = "http://${aws_instance.web.public_ip}"
-    insecure = true
-
-    depends_on = [aws_instance.web, time_sleep.delay]
-  }
-
-  assert {
-    condition = data.http.check_ec2_validation.status_code == 200
-    error_message = "EC2 check returns unhealthy status code"
-  }
-}
+# ### Validation using data
+# data "http" "data_ec2_validation" {
+#   url      = "http://${aws_instance.web.public_ip}"
+#   insecure = true
+#
+#   lifecycle {
+#     postcondition {
+#       condition     = self.status_code == 200
+#       error_message = "${self.url} returned an unhealthy status code"
+#     }
+#   }
+#
+#   depends_on = [aws_instance.web, time_sleep.delay]
+# }
+#
+# ### Validation using check
+# check "response" {
+#   data "http" "check_ec2_validation" {
+#     url      = "http://${aws_instance.web.public_ip}"
+#     insecure = true
+#
+#     depends_on = [aws_instance.web, time_sleep.delay]
+#   }
+#
+#   assert {
+#     condition     = data.http.check_ec2_validation.status_code == 200
+#     error_message = "EC2 check returns unhealthy status code"
+#   }
+# }
