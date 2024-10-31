@@ -1,5 +1,5 @@
 sg_name,rule_type,protocol,port_range,dst_cidr,dst_sg
-app_sg,ingress,tcp,8080-8080,0.0.0.0/0,
+app_sg,ingress,tcp,80-80,0.0.0.0/0,
 app_sg,ingress,tcp,443-443,0.0.0.0/0,
 app_sg,ingress,udp,230-230,,cache_sg
 app_sg,egress,tcp,2236-2238,,db_sg

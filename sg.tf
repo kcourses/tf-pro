@@ -1,7 +1,7 @@
 locals {
   sg_tables = { for name, sg in jsondecode(file("./security_groups_data/sg.json")).security_groups : sg["name"] => sg }
   #  sg_table_rules = { for idx, rule in csvdecode(file("./security_groups_data/sg_rules.csv")) : idx => rule if rule["rule_type"] == "ingress" && rule["dst_cidr"] != "" }
-  sg_table_rules = { for idx, rule in csvdecode(file("./security_groups_data/sg_rules.csv")) : idx => rule if rule["rule_type"] == "ingress" }
+  sg_table_rules = { for idx, rule in csvdecode(file("./security_groups_data/sg_rules.csv")) : idx => rule }
 }
 
 ### Not working - issue with cycle
@@ -32,12 +32,12 @@ resource "aws_security_group" "sg" {
   description = each.value.description
 }
 
-resource "aws_security_group_rule" "sg_ingress_rules" {
+resource "aws_security_group_rule" "sg_rules" {
   for_each = local.sg_table_rules
 
   security_group_id = aws_security_group.sg[each.value.sg_name].id
 
-  type      = "ingress"
+  type      = each.value.rule_type
   protocol  = each.value.protocol
   from_port = tonumber(split("-", each.value.port_range)[0])
   to_port   = tonumber(split("-", each.value.port_range)[1])
