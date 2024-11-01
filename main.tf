@@ -1,58 +1,21 @@
-data "aws_region" "current" {}
-
-locals {
-  policy_names = ["s3_read_access", "s3_list_access"]
+module "iam" {
+  source = "./modules/iam"
+  iam_role_name = "s3_access_role"
 }
 
-resource "random_string" "random_account_id" {
-  length  = 12
-  special = false
-  lower   = false
-  upper   = false
-  numeric = true
+# moved {
+#   from = aws_iam_role.test_role
+#   to   = module.iam.aws_iam_role.test_role
+# }
+
+output "iam_role_arn" {
+  value = module.iam.iam_role_arn
 }
 
-output "random_string" {
-  value = random_string.random_account_id.result
+output "iam_role_id" {
+  value = module.iam.iam_role_id
 }
 
-resource "aws_iam_policy" "s3_policies" {
-  for_each = { for name in local.policy_names : name => name }
-
-  name = each.key
-  path = "/"
-  #   policy = file("${path.module}/policies/${each.key}.json")
-  policy = templatefile("${path.module}/policies/${each.key}.json", {
-    accountid = random_string.random_account_id.result
-  })
+output "iam_policies_arn" {
+  value = module.iam.iam_policies_arn
 }
-
-resource "aws_iam_role_policy_attachment" "s3_policy_attachments" {
-  for_each = aws_iam_policy.s3_policies
-
-  policy_arn = each.value.arn
-  role       = aws_iam_role.test_role.name
-}
-
-resource "aws_iam_role" "test_role" {
-  name = var.iam_role_name
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Sid    = ""
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        }
-      },
-    ]
-  })
-
-  tags = {
-    Region = data.aws_region.current.name
-  }
-}
-
