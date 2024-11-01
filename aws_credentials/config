@@ -1,0 +1,9 @@
+[default]
+region = eu-west-1
+output = json
+
+[profile central]
+source_profile = default
+region = eu-central-1
+output = json
+role_arn = arn:aws:iam::ACC_ID:role/assume-role
